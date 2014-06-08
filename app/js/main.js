@@ -30,6 +30,5 @@ var node = mainContext.add(modifier).add(surface);
 function _boardSize(board) {
     var contextSize = mainContext.getSize();
     //board.setSize(contextSize);
-    board.draw();
     console.log('board set to ', contextSize);
 }

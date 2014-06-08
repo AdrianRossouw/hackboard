@@ -13,6 +13,24 @@ var CanvasSurface = require('famous/surfaces/CanvasSurface');
 function Whiteboard(options) {
     CanvasSurface.apply(this, arguments);
     this._superDeploy = CanvasSurface.prototype.deploy;
+
+    var ctx = this.getContext('2d');
+    ctx.fillStyle = "solid";
+    ctx.strokeStyle = "#bada55";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+
+    // simplest way i could think of.
+    // go look here first :
+    // http://famo.us/docs/0.2.0/inputs/GenericSync/
+    // http://famo.us/docs/0.2.0/inputs/MouseSync
+    this.eventHandler.on('mousedown', drawEvent.bind(this, 'start'));
+    this.eventHandler.on('mousemove', drawEvent.bind(this, 'move'));
+    this.eventHandler.on('mouseup', drawEvent.bind(this, 'end'));
+
+    function drawEvent(type, evt) {
+        this.draw(evt.offsetX, evt.offsetY, type);
+    }
 }
 
 Whiteboard.prototype = Object.create(CanvasSurface.prototype);
@@ -23,15 +41,19 @@ Whiteboard.prototype.deploy = function deploy(target) {
     this.eventHandler.trigger('post-render', this);
 };
 
-Whiteboard.prototype.draw = function(data) {
-    var ctx = this.getContext("2d");
-    ctx.beginPath();
-    ctx.moveTo(20,20);
-    ctx.lineTo(20,100);
-    ctx.lineTo(70,100);
-    ctx.strokeStyle="red";
-    ctx.stroke();
+Whiteboard.prototype.draw = function(x, y, type) {
+    var ctx = this.getContext('2d');
+    if (type === "start") {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    } else if (type === "move") {
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    } else {
+        ctx.closePath();
+    }
 };
 
+// READ THE EVENT TUTORIAL FOR A BETTER INSIGHT INTO THIS STUFF
 
 module.exports = Whiteboard;
