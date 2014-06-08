@@ -13,13 +13,6 @@ var Wall            = require('famous/physics/constraints/Wall');
 
 var mainContext = Engine.createContext();
 
-function App(options) {
-    View.apply(this, arguments);
-}
-
-App.prototype = Object.create(View.prototype);
-App.prototype.constructor = App;
-
 function Whiteboard(options) {
     Surface.apply(this, arguments);
     this._superDeploy = Surface.prototype.deploy;
@@ -35,44 +28,27 @@ Whiteboard.prototype.deploy = function deploy(target) {
 
 var eventHandler = new EventHandler();
 
-eventHandler.on('post-render', _buildWalls);
-var boardSize = [3840, 2160];
+eventHandler.on('post-render', _boardSize);
+
+// this is to handle resize events, but it needs debounce
+// Engine.on('resize', _boardSize);
 
 
 var surface = new Whiteboard({
-    size: [3840, 2160],
+    size: [100, 100],
     classes: ['board'],
 });
 
 surface.pipe(eventHandler);
+
 var modifier = new StateModifier({
     origin: [0.5, 0.5]
 });
 
-var draggable = new Draggable({});
-draggable.subscribe(surface);
+var node = mainContext.add(modifier).add(surface);
 
-var node = mainContext.add(modifier);
-node.add(draggable).add(surface);
-
-function _buildWalls(data) {
+function _boardSize(data) {
     var contextSize = mainContext.getSize();
-    var surfaceSize = data.getSize();
-
-    var walls = [];
-    walls.push(_wall([1, 0, 0], contextSize[0], surfaceSize[0]));
-    walls.push(_wall([-1, 0, 0], contextSize[0], surfaceSize[0]));
-    walls.push(_wall([0, 1, 0], contextSize[1], surfaceSize[1]));
-    walls.push(_wall([0,-1, 0], contextSize[1], surfaceSize[1]));
-
-    function _wall(normal, ctxSize, bfrSize) {
-        var opts = {
-            normal : [-1,0,0],
-            distance : (ctxSize/2.0) + bfrSize,
-            restitution : 0.5
-        };
-        console.log(opts);
-        return new Wall(opts);
-    }
+    surface.setSize(contextSize);
+    console.log('board set to ', contextSize);
 }
-
