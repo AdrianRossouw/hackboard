@@ -8,7 +8,6 @@ var Whiteboard = require('./whiteboard');
 var mainContext = Engine.createContext();
 
 var eventHandler = new EventHandler();
-
 eventHandler.on('post-render', _boardSize);
 
 // this is to handle resize events, but it needs debounce
