@@ -8,13 +8,14 @@ var Whiteboard = require('./whiteboard');
 var mainContext = Engine.createContext();
 
 var eventHandler = new EventHandler();
+
 eventHandler.on('post-render', _boardSize);
 
 // this is to handle resize events, but it needs debounce
 // Engine.on('resize', _boardSize);
 
 var surface = new Whiteboard({
-    size: [100, 100],
+    size: [800, 600],
     classes: ['board'],
 });
 
@@ -26,8 +27,9 @@ var modifier = new StateModifier({
 
 var node = mainContext.add(modifier).add(surface);
 
-function _boardSize(data) {
+function _boardSize(board) {
     var contextSize = mainContext.getSize();
-    surface.setSize(contextSize);
+    //board.setSize(contextSize);
+    board.draw();
     console.log('board set to ', contextSize);
 }
